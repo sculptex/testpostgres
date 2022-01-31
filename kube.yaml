@@ -1,0 +1,5 @@
+dbhost : 10.233.39.226
+dbport : 5432
+dbuser : postgres
+dbpassword : postgres
+dbname : blobber_meta
