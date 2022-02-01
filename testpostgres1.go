@@ -81,6 +81,10 @@ func main() {
     CheckError(err) 
     fmt.Println("Connected successfully!")
 
+    var totdbbytes int64
+    totdbbytes = 0
+    var totidxbytes int64
+    totidxbytes = 0
 	res, err := db.Query("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'")
 	CheckError(err)	 
 	defer res.Close()
@@ -117,11 +121,13 @@ func main() {
 	    var dbbytespr int
 		dbbytes , _ = strconv.ParseInt(dbpagecount, 10, 64)
 		dbbytes = dbbytes * 8 * 1024
-
+		totdbbytes = totdbbytes+dbbytes
+		
 	    var idxbytes int64
 	    var idxbytespr int
 		idxbytes , _ = strconv.ParseInt(idxpagecount, 10, 64)
 		idxbytes = idxbytes * 8 * 1024
+		totidxbytes = totidxbytes+idxbytes
 		
 		if(rows > 0) {
 			dbbytespr = int(dbbytes / rows)
@@ -131,8 +137,10 @@ func main() {
 		    idxbytespr = 0
 		}
 	    
-	    fmt.Printf("%-20s\t\t%d DB rows\t%s total\t(%s per row)\tIDX %s total\t(%s per row)\tTOTAL %s total\t(%s per row)\n", tablename, rows, showfilesize(dbbytes), showfilesize(int64(dbbytespr)), showfilesize(idxbytes), showfilesize(int64(idxbytespr)), showfilesize(dbbytes+idxbytes), showfilesize(int64(dbbytespr+idxbytespr)) )
+	    fmt.Printf("%-20s\t\t%7d rows\tDB %-10s total\t(%-10s per row)\tIDX %-10s total\t(%-10s per row)\tTOTAL %-10s total\t(%-10s per row)\n", tablename, rows, showfilesize(dbbytes), showfilesize(int64(dbbytespr)), showfilesize(idxbytes), showfilesize(int64(idxbytespr)), showfilesize(dbbytes+idxbytes), showfilesize(int64(dbbytespr+idxbytespr)) )
 	}
+
+	fmt.Printf("\n%-20s\t\t\t\tDB %-10s\t\t\t\t\tIDX %-10s\t\t\t\t\tTOTAL %-10s total\n", "TOTAL", showfilesize(totdbbytes), showfilesize(totidxbytes), showfilesize(totdbbytes+totidxbytes) )
 
 }
  
